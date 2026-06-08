@@ -13,3 +13,13 @@ export async function createProduct({ title, description, price }) {
   } = await db.query(sql, [title, description, price]);
   return product;
 }
+
+/** GET /products sends array of all products */
+export async function getProducts() {
+  const sql = `
+    SELECT *
+    FROM products
+    `;
+  const { rows: products } = await db.query(sql);
+  return products;
+}
