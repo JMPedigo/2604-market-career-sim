@@ -39,3 +39,19 @@ export async function getProductById(id) {
   } = await db.query(sql, [id]);
   return product;
 }
+
+/** 🔒 GET /products/:id/orders
+ * sends 404 if the product with that id does not exist (even if the user is logged in!)
+ * sends an array of all orders made by the user that include this product */
+export async function getProductsByOrderId(id) {
+  const sql = `
+    SELECT products.*
+    FROM
+      products
+      JOIN orders_products ON orders_products.product_id = products.id
+      JOIN orders ON orders.id = orders_products.orders_id
+    WHERE orders.id = $1
+    `;
+  const { rows: products } = await db.query(sql, [id]);
+  return products;
+}
