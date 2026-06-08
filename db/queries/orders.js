@@ -1,6 +1,6 @@
 import db from "#db/client";
 
-export async function createOrder(date, note, user_id) {
+export async function createOrder({ date, note, user_id }) {
   const sql = `
     INSERT INTO orders
       (date, note, user_id)

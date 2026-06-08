@@ -1,6 +1,6 @@
 import db from "#db/client";
 
-export async function createProduct(title, description, price) {
+export async function createProduct({ title, description, price }) {
   const sql = `
     INSERT INTO products
       (title, description, price)
