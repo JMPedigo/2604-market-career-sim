@@ -20,7 +20,7 @@ CREATE TABLE orders (
     id serial PRIMARY KEY,
     date date NOT NULL,
     note text,
-    user_id int NOT NULL
+    user_id int NOT NULL REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE orders_products (
