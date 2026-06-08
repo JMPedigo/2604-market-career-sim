@@ -23,3 +23,19 @@ export async function getProducts() {
   const { rows: products } = await db.query(sql);
   return products;
 }
+
+/** GET /products/:id
+ * sends 404 if the product with that id does not exist
+ * sends the specific product
+ */
+export async function getProductById(id) {
+  const sql = `
+    SELECT *
+    FROM products
+    WHERE id = $1
+    `;
+  const {
+    rows: [product],
+  } = await db.query(sql, [id]);
+  return product;
+}
