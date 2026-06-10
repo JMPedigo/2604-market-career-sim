@@ -26,10 +26,7 @@ export async function getOrdersByUserId(id) {
   return orders;
 }
 
-/**  🔒 GET /orders/:id
- * sends 404 if the order does not exist
- * sends 403 if the logged-in user is not the user who made the order
- * sends the order with the specified id*/
+// sends the order with the specified id
 export async function getOrderById(id) {
   const sql = `
   SELECT *
@@ -40,4 +37,19 @@ export async function getOrderById(id) {
     rows: [order],
   } = await db.query(sql, [id]);
   return order;
+}
+
+// Adds a product to an order
+export async function addProducttoOrder(orderId, productId, quantity) {
+  const sql = `
+  INSERT INTO order_products
+    (order_id, product_id, quantity)
+  VALUES
+    ($1, $2, $3)
+  RETURNING *
+  `;
+  const {
+    rows: [ordersProduct],
+  } = await db.query(sql, [orderId, productId, quantity]);
+  return ordersProduct;
 }
