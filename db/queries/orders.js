@@ -42,7 +42,7 @@ export async function getOrderById(id) {
 // Adds a product to an order
 export async function addProductToOrder(orderId, productId, quantity) {
   const sql = `
-  INSERT INTO order_products
+  INSERT INTO orders_products
     (order_id, product_id, quantity)
   VALUES
     ($1, $2, $3)
