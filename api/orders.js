@@ -23,3 +23,5 @@ router.get("/", async (res, req) => {
   const orders = await getOrdersByUserId(id);
   res.send(orders);
 });
+
+/** Routing middleware that allows reuse of the logic for parsing ID parameter */

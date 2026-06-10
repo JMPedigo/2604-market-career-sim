@@ -25,3 +25,19 @@ export async function getOrdersByUserId(id) {
   const { rows: orders } = await db.query(sql, [id]);
   return orders;
 }
+
+/**  🔒 GET /orders/:id
+ * sends 404 if the order does not exist
+ * sends 403 if the logged-in user is not the user who made the order
+ * sends the order with the specified id*/
+export async function getOrderById(id) {
+  const sql = `
+  SELECT *
+  FROM orders
+  WHERE id = $1
+  `;
+  const {
+    rows: [order],
+  } = await db.query(sql, [id]);
+  return order;
+}
