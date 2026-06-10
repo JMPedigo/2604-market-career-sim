@@ -3,7 +3,13 @@ const router = express.Router();
 export default router;
 
 import requireUser from "#middleware/requireUser";
-import { createOrder, getOrderById, getOrdersByUserId } from "#db/queries/orders";
+import {
+  addProducttoOrder,
+  createOrder,
+  getOrderById,
+  getOrdersByUserId,
+} from "#db/queries/orders";
+import requireBody from "#middleware/requireBody";
 
 router.use(requireUser);
 
@@ -14,31 +20,59 @@ router.post("/", async (req, res) => {
   const { date, note, user_id } = req.body;
   if (!date) return res.status(400).send("Request body requires date.");
 
-  const order = await createOrder(date, note, user_id);
+  const order = await createOrder({ date, note, user_id });
   res.status(201).send(order);
 });
 
 /** middleware for getOrdersByUserId */
-router.get("/", async (res, req) => {
-  const orders = await getOrdersByUserId(id);
+router.get("/", async (req, res) => {
+  const orders = await getOrdersByUserId(req.user.id);
   res.send(orders);
 });
 
-/** Routing middleware that allows reuse of the logic for parsing ID parameter */
-router.param("/:id", (req,res, next, id) => {
-    /** 🔒 GET /orders/:id */
-    const order = await getOrderById(id);
+/** 🔒 GET /orders/:id */
+router.get("/:id", async (req, res) => {
+  const order = await getOrderById(id);
+  // sends 404 if the order does not exist
+  if (!order) return res.status(404).send("Order not found.");
+  // sends 403 if the logged-in user is not the user who made the order
+  if (order.user_id !== req.user.id)
+    return res.status(403).send("You are not authorized to view this order.");
+
+  res.send(order);
+});
+
+/** 🔒 POST /orders/:id/products */
+router.post(
+  "/:id/products",
+  requireBody(["productId", "quantity"]),
+  async (req, res) => {
+    const { productId, quantity } = req.body;
+    //sends 400 if the request body does not include a productId and a quantity
+    if (!productId || quantity === undefined) {
+      return res
+        .status(400)
+        .send("Request body requires productId and quantity.");
+    }
+
     // sends 404 if the order does not exist
+    const order = await getOrderById(id);
     if (!order) return res.status(404).send("Order not found.");
-    
-    // sends 403 if the logged-in user is not the user who made the order
-    if (req.order.user_id !== req.user.id) return res.status(403).send("You are not authorized to view this order.");
 
-    req.order = order;
-    next();
-});
-// Sends the order with the specified id
-router.get("/:id", (req, res) => {
-    res.status(200).send(req.order);
-});
+    //sends 403 if the logged-in user is not the user who made the order
+    if (order.user_id !== req.user.id)
+      return res.status(403).send("You are not authorized to view this order.");
 
+    // sends 400 if the productId references a product that does not exist
+    const product = await getProductById(productId);
+    if (!product) return res.status(400).send("Product not found.");
+
+    // adds the specified quantity of the product to the order and sends the created orders_products record with status 201
+    const packingList = await addProducttoOrder(
+      req.params.id,
+      productId,
+      quantity,
+    );
+    res.status(201).send(packingList);
+  },
+);
