@@ -26,15 +26,18 @@ router.get("/", async (res, req) => {
 
 /** Routing middleware that allows reuse of the logic for parsing ID parameter */
 router.param("/:id", (req,res, next, id) => {
+    /** 🔒 GET /orders/:id */
     const order = await getOrderById(id);
+    // sends 404 if the order does not exist
     if (!order) return res.status(404).send("Order not found.");
-
+    
+    // sends 403 if the logged-in user is not the user who made the order
     if (req.order.user_id !== req.user.id) return res.status(403).send("You are not authorized to view this order.");
 
     req.order = order;
     next();
 });
-
+// Sends the order with the specified id
 router.get("/:id", (req, res) => {
     res.status(200).send(req.order);
 });
