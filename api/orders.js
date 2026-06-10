@@ -4,7 +4,7 @@ export default router;
 
 import requireUser from "#middleware/requireUser";
 import {
-  addProducttoOrder,
+  addProductToOrder,
   createOrder,
   getOrderById,
   getOrdersByUserId,

@@ -40,7 +40,7 @@ export async function getOrderById(id) {
 }
 
 // Adds a product to an order
-export async function addProducttoOrder(orderId, productId, quantity) {
+export async function addProductToOrder(orderId, productId, quantity) {
   const sql = `
   INSERT INTO order_products
     (order_id, product_id, quantity)
@@ -49,7 +49,9 @@ export async function addProducttoOrder(orderId, productId, quantity) {
   RETURNING *
   `;
   const {
-    rows: [ordersProduct],
+    rows: [packingList],
   } = await db.query(sql, [orderId, productId, quantity]);
-  return ordersProduct;
+  return packingList;
 }
+
+/** Sends the array of products in the order */
