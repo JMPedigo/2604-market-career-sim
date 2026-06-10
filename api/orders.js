@@ -20,6 +20,6 @@ router.post("/", async (req, res) => {
 
 /** middleware for getOrdersByUserId */
 router.get("/", async (res, req) => {
-    const orders = await getOrdersByUserId(id);
-    res.send(orders);
-}
+  const orders = await getOrdersByUserId(id);
+  res.send(orders);
+});
