@@ -3,7 +3,7 @@ const router = express.Router();
 export default router;
 
 import requireUser from "#middleware/requireUser";
-import { createOrder } from "#db/queries/orders";
+import { createOrder, getOrdersByUserId } from "#db/queries/orders";
 
 router.use(requireUser);
 
@@ -17,3 +17,9 @@ router.post("/", async (req, res) => {
   const order = await createOrder(date, note, user_id);
   res.status(201).send(order);
 });
+
+/** middleware for getOrdersByUserId */
+router.get("/", async (res, req) => {
+    const orders = await getOrdersByUserId(id);
+    res.send(orders);
+}
