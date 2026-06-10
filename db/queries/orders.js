@@ -55,3 +55,14 @@ export async function addProductToOrder(orderId, productId, quantity) {
 }
 
 /** Sends the array of products in the order */
+export async function getProductsByOrderId(orderId) {
+  const sql = `
+    SELECT products.*
+    FROM
+      products
+      JOIN orders_products ON orders_products.product_id = products.id
+    WHERE orders_products.order_id = $1
+    `;
+  const { rows: products } = await db.query(sql, [orderId]);
+  return products;
+}

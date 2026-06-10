@@ -2,7 +2,11 @@ import express from "express";
 const router = express.Router();
 export default router;
 
-import { getProductById, getProducts } from "#db/queries/products";
+import {
+  getOrdersByProductId,
+  getProductById,
+  getProducts,
+} from "#db/queries/products";
 import requireUser from "#middleware/requireUser";
 
 /** GET /products sends array of all products */
@@ -24,3 +28,10 @@ router.get("/:id", (req, res) => {
 });
 
 router.use(requireUser);
+
+/** 🔒 GET /products/:id/orders */
+router.get("/:id/orders", async (req, res) => {
+  const orders = await getOrdersByProductId(req.params.id, req.user.id);
+
+  res.send(orders);
+});

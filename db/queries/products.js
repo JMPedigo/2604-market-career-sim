@@ -40,18 +40,16 @@ export async function getProductById(id) {
   return product;
 }
 
-/** 🔒 GET /products/:id/orders
- * sends 404 if the product with that id does not exist (even if the user is logged in!)
- * sends an array of all orders made by the user that include this product */
-export async function getProductsByOrderId(id) {
+/** sends an array of all orders made by the user that include this product */
+export async function getOrdersByProductId(productId, userId) {
   const sql = `
-    SELECT products.*
-    FROM
-      products
-      JOIN orders_products ON orders_products.product_id = products.id
-      JOIN orders ON orders.id = orders_products.orders_id
-    WHERE orders.id = $1
-    `;
-  const { rows: products } = await db.query(sql, [id]);
-  return products;
+  SELECT orders.*
+  FROM
+    orders
+  JOIN orders_products ON orders_products.order_id = orders.id
+  WHERE orders_products.product_id = $1
+    AND orders.user_id = $2
+  `;
+  const { rows: orders } = await db.query(sql, [productId, userId]);
+  return orders;
 }
